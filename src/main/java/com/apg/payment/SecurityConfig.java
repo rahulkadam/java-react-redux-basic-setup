@@ -13,6 +13,9 @@ import org.springframework.security.oauth2.client.web.HttpSessionOAuth2Authoriza
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 /**
  * @author Hitesh This class is created for adding custom security configuration
@@ -53,7 +56,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       //          .authorizationRequestRepository(customAuthorizationRequestRepository());
 
         http.addFilterBefore(authenticationTokenFilterBean(), OAuth2AuthorizationRequestRedirectFilter.class);
-        http.sessionManagement(cust -> cust.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+
+    @Bean
+    public SecurityContextPersistenceFilter securityContextPersistenceFilterASCFalse() {
+        HttpSessionSecurityContextRepository httpSessionSecurityContextRepository = new HttpSessionSecurityContextRepository();
+        httpSessionSecurityContextRepository.setAllowSessionCreation(false);
+        return new SecurityContextPersistenceFilter(
+                httpSessionSecurityContextRepository);
+    }
+
+
+    @Bean
+    public SecurityContextRepository customSecurityContextRepository() {
+        HttpSessionSecurityContextRepository httpSessionSecurityContextRepository = new HttpSessionSecurityContextRepository();
+        httpSessionSecurityContextRepository.setAllowSessionCreation(false);
+        return httpSessionSecurityContextRepository;
     }
 
     @Bean

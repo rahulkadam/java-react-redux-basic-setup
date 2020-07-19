@@ -31,9 +31,9 @@ public class CustomAuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
         System.out.println("OIDC user from success : "+ oidcUser);
         String redirectionUrl = UriComponentsBuilder.fromUriString(homeUrl)
-                .queryParam("auth_token", oidcUser.getIdToken().getTokenValue())
+                .queryParam("auth_token", oidcUser.getName())
                 .build().toUriString();
-        Cookie cookie = new Cookie("Token", oidcUser.getEmail());
+        Cookie cookie = new Cookie("Token", oidcUser.getName());
         response.addCookie(cookie);
         getRedirectStrategy().sendRedirect(request, response, redirectionUrl);
     }
