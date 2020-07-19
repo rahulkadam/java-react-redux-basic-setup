@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -44,14 +46,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .baseUri("/oauth2/callback/*")
                 .and()
                 .userInfoEndpoint()
-                .oidcUserService(customOauthUserService)
-                .and()
-                .authorizationEndpoint()
-                .baseUri("/oauth2/authorize")
-                .authorizationRequestRepository(customAuthorizationRequestRepository());
-        http
-                .addFilterBefore(authenticationTokenFilterBean(), UsernamePasswordAuthenticationFilter.class);
+                .oidcUserService(customOauthUserService);
+//                .and()
+  //              .authorizationEndpoint()
+    //            .baseUri("/oauth2/authorize")
+      //          .authorizationRequestRepository(customAuthorizationRequestRepository());
 
+        http.addFilterBefore(authenticationTokenFilterBean(), OAuth2AuthorizationRequestRedirectFilter.class);
+        http.sessionManagement(cust -> cust.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     }
 
     @Bean
