@@ -1,5 +1,7 @@
 package com.apg.payment;
 
+import com.google.api.client.json.webtoken.JsonWebSignature;
+import com.google.auth.oauth2.TokenVerifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
@@ -26,11 +28,21 @@ public class CustomOauthUserService extends OidcUserService {
         return oidcUser;
     }
 
+
+    public String fetchTokenFromOneTimeToken(String oneTimeToken) {
+        return oneTimeToken;
+    }
+
     public OAuth2User findUserByToken(String token) {
 
         if (StringUtils.isEmpty(token)){
             return null;
         }
+
+        if (!verifyToken(token)) {
+            return null;
+        }
+
         Map<String, Object> userAttributes = new HashMap<>();
         Set<GrantedAuthority> authorities = new LinkedHashSet<>();
 
@@ -41,5 +53,22 @@ public class CustomOauthUserService extends OidcUserService {
         OAuth2User oidcUser = new DefaultOAuth2User(authorities, userAttributes, "email");
 
         return oidcUser;
+    }
+
+    public boolean verifyToken(String token) {
+        TokenVerifier tokenVerifier = TokenVerifier.newBuilder().build();
+        try {
+            JsonWebSignature jsonWebSignature = tokenVerifier.verify(token);
+
+            // optionally verify additional claims
+            if (!"expected-value".equals(jsonWebSignature.getPayload().get("additional-claim"))) {
+                // handle custom verification error
+                System.out.println("found token");
+            }
+            return true;
+        } catch (TokenVerifier.VerificationException e) {
+            // invalid token
+            return false;
+        }
     }
 }
