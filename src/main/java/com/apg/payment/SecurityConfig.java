@@ -49,11 +49,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .baseUri("/oauth2/callback/*")
                 .and()
                 .userInfoEndpoint()
-                .oidcUserService(customOauthUserService);
-//                .and()
-  //              .authorizationEndpoint()
-    //            .baseUri("/oauth2/authorize")
-      //          .authorizationRequestRepository(customAuthorizationRequestRepository());
+                .oidcUserService(customOauthUserService)
+                .and()
+                .authorizationEndpoint()
+                .baseUri("/oauth2/authorize")
+                .authorizationRequestRepository(customAuthorizationRequestRepository());
 
         http.addFilterBefore(authenticationTokenFilterBean(), OAuth2AuthorizationRequestRedirectFilter.class);
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -77,7 +77,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthorizationRequestRepository customAuthorizationRequestRepository() {
-        return new HttpSessionOAuth2AuthorizationRequestRepository();
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
     }
 
     @Bean

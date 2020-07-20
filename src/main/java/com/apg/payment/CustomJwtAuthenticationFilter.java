@@ -46,7 +46,9 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (!StringUtils.isEmpty(tokenParam)) {
             OAuth2AuthorizedClient authentication1 = inMemoryOAuth2AuthorizedClientService.loadAuthorizedClient("google", tokenParam);
-            System.out.println("FOund authentication : " + authentication1.getPrincipalName());
+            if (authentication1 != null) {
+                System.out.println("FOund authentication : " + authentication1.getPrincipalName());
+            }
 
             Map<String, Object> additionalParameters = new HashMap<>();
             //OidcUserRequest oidOAuth2UserRequest = new OidcUserRequest(
